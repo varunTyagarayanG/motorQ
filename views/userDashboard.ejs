@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Cars</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            background-image: url('https://images01.nicepagecdn.com/page/53/83/website-design-preview-53832.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            color: #ffffff;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero.hide {
+            opacity: 0;
+        }
+
+        .filter-form {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            position: relative; /* Added for debugging */
+            z-index: 1; /* Ensure it's on top of other content */
+            border: 1px solid red; /* Border added for debugging */
+        }
+
+        .filter-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .filter-form button {
+            background-color: #ff416c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .filter-form button:hover {
+            background-color: #e63946;
+        }
+
+        .car-list {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+            position: relative;
+            z-index: 0;
+        }
+
+        .car-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .book-btn {
+            background-color: #ff416c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .book-btn:hover {
+            background-color: #e63946;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1>Available Cars</h1>
+            <p>Find your perfect car for any occasion.</p>
+        </div>
+    </section>
+
+    <div class="filter-form">
+        <form id="filter-form">
+            <label for="make">Make:</label>
+            <input type="text" id="make" name="make">
+
+            <label for="model">Model:</label>
+            <input type="text" id="model" name="model">
+
+            <label for="year">Year:</label>
+            <input type="number" id="year" name="year" min="1900" max="2100">
+
+            <label for="fuelType">Fuel Type:</label>
+            <select id="fuelType" name="fuelType">
+                <option value="">Any</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Electric">Electric</option>
+                <!-- Add more options as needed -->
+            </select>
+
+            <label for="minRent">Min Rent per Hour:</label>
+            <input type="number" id="minRent" name="minRent" min="0" step="0.01">
+
+            <label for="maxRent">Max Rent per Hour:</label>
+            <input type="number" id="maxRent" name="maxRent" min="0" step="0.01">
+
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+
+    <div class="car-list" id="car-list">
+        <!-- Car cards will be dynamically generated here -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const filterForm = document.getElementById('filter-form');
+            const carList = document.getElementById('car-list');
+
+            // Function to fetch cars with filters
+            async function fetchCars(filters = {}) {
+                const queryString = new URLSearchParams(filters).toString();
+                const response = await fetch(`/v1/user/getAvailableCars?${queryString}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                return response.json();
+            }
+
+            // Initial fetch
+            async function loadCars() {
+                try {
+                    const cars = await fetchCars();
+                    displayCars(cars);
+                } catch (error) {
+                    console.error('Error fetching available cars:', error);
+                }
+            }
+
+            // Display cars
+            function displayCars(cars) {
+                carList.innerHTML = '';
+                if (cars.length > 0) {
+                    cars.forEach(car => {
+                        const carCard = document.createElement('div');
+                        carCard.className = 'car-card';
+                        carCard.innerHTML = `
+                            <h2>${car.model}</h2>
+                            <p>Make: ${car.make}</p>
+                            <p>Year: ${car.year}</p>
+                            <p>Seats: ${car.capacity}</p>
+                            <p>Fuel Type: ${car.fuelType}</p>
+                            <p>Price per hour: $${car.rentPerHour}</p>
+                            <button class="book-btn" data-car-id="${car._id}">Book Now</button>
+                        `;
+                        carList.appendChild(carCard);
+                    });
+
+                    // Add event listener to all 'Book Now' buttons
+                    document.querySelectorAll('.book-btn').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const carId = event.target.getAttribute('data-car-id');
+                            if (carId) {
+                                window.location.href = `/book?_id=${carId}`;
+                            } else {
+                                console.error('Car ID is missing');
+                            }
+                        });
+                    });
+                } else {
+                    carList.innerHTML = '<p>No cars available for the selected filters.</p>';
+                }
+            }
+
+            // Filter form submit event
+            filterForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent form from submitting normally
+                const formData = new FormData(filterForm);
+                const filters = Object.fromEntries(formData.entries());
+                try {
+                    const cars = await fetchCars(filters);
+                    displayCars(cars);
+                } catch (error) {
+                    console.error('Error filtering cars:', error);
+                }
+            });
+
+            // Initial load
+            loadCars();
+        });
+
+        window.addEventListener('scroll', function () {
+            const hero = document.querySelector('.hero');
+            const scrollPosition = window.pageYOffset;
+
+            // Calculate opacity based on scroll position
+            const opacity = 1 - (scrollPosition / window.innerHeight);
+            hero.style.opacity = opacity;
+
+            // Add 'hide' class when scrolled beyond certain point
+            if (scrollPosition > window.innerHeight * 0.5) {
+                hero.classList.add('hide');
+            } else {
+                hero.classList.remove('hide');
+            }
+        });
+    </script>
+</body>
+
+</html>
