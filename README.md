@@ -1,5 +1,5 @@
 # Video Demonstration Script
-
+[https://drive.google.com/file/d/1sQobjpe1kw0PDek7L1qO7wYhbpufF3cX/view?usp=sharing]()
 This video demonstration will cover various workflows, including Car Inventory Management, Vehicle Booking, Trip Management, Conflict Management, Concurrency Management, Vehicle Availability, and the Notification System.
 
 ## 1. Car Inventory Management (Administrator’s Perspective)
@@ -91,4 +91,25 @@ This video demonstration will cover various workflows, including Car Inventory M
 
 ---
 
-This Markdown file covers each aspect of the video demonstration with clear objectives and script lines for easy narration.
+## How to Run This Project
+
+To run the project, follow these simple steps:
+
+1. **Install Dependencies:**
+   - Run the following command to install all necessary packages:
+     ```bash
+     npm install
+     ```
+
+2. **Start the Project:**
+   - Once the dependencies are installed, start the project by running:
+     ```bash
+     npm start
+     ```
+
+3. **Follow the Path:**
+   - After running the `npm start` command, the terminal will display a path. Follow this path in your web browser to view the project and ensure everything is functioning as expected.
+
+---
+
+This Markdown file now includes instructions on how to run the project along with the detailed script for your video demonstration.
