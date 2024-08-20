@@ -1,0 +1,19 @@
+LOGIN: http://127.0.0.1:6982/v1/user/login
+
+{
+  "email": "varunmuralidhar9@gmail.com",
+  "password": "1234"
+}
+
+GET  : getAvailableCars : http://127.0.0.1:6982/v1/user/getAvailableCars
+
+POST : http://127.0.0.1:6982/v1/user/bookCar
+
+POST : http://127.0.0.1:6982/v1/user/bookCar
+
+{
+  "carId": "66c4825c373a053aeabd5b5b",
+  "from": "2024-08-21T10:00:00.000Z",
+  "to": "2024-08-21T14:00:00.000Z"
+}
+7

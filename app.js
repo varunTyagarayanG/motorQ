@@ -6,11 +6,15 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const connectDB = require('./config/db'); 
+const ejs =  require('ejs');
+const path = require('path');
 const userRoutes = require('./routes/user')
 const adminRoutes = require('./routes/admin')
 dotenv.config();
 
 const app = express();
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
 
 // Middleware setup
 app.use(express.json());
@@ -22,10 +26,11 @@ app.use('/v1/admin' ,adminRoutes)
 connectDB();
 
 app.get('/', (req, res) => {
-    res.send('Welcome to the carServices app!');
+    res.render('authentication');
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port http://localhost:${PORT}`);
 });

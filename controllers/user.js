@@ -6,6 +6,7 @@ const Car = require("../models/cars");
 const bcrypt=require('bcryptjs');
 const jwt = require('jsonwebtoken')
 dotenv.config();
+const mailServices = require('../config/mail')
 
 exports.login = async (req, res) => {
   try {
@@ -112,7 +113,6 @@ exports.register = async (req, res) => {
   };
 
 
-  //Other options for users Other than loggin in !
 exports.getAvailableCars = async (req, res) => {
   const { from, to } = req.query;
 
@@ -143,25 +143,11 @@ exports.bookCar = async (req, res) => {
     }
 
     const car = await Car.findById(carId);
-    if(car.inTransaction){
-      return res.status(400).json({
-        message: "SomeOne Is Booking This car..ans he is first in link",
-      });
-    }
-    car.inTransaction = true ;
-    const carDetails = {
-      carname : car.name,
-      carsize : car.capacity,
-      carFuel : car.fuelType,
-      registrationNumber : car.registrationNumber ,
-      carname : car.name,
-    }
     if (!car) {
       return res.status(404).json({ message: "Car not found" });
     }
 
     const isBooked = car.bookedTimeSlots.some(slot => {
-      car.inTransaction = false 
       return (
         (new Date(slot.from) < new Date(to) && new Date(slot.to) > new Date(from))
       );
@@ -173,16 +159,19 @@ exports.bookCar = async (req, res) => {
       });
     }
 
-    car.bookedTimeSlots.push({ car, from, to });
+    car.bookedTimeSlots.push({ from, to });
     await car.save();
 
     const user = await User.findById(req.userId);
     if (user) {
-      user.bookings.push({ carDetails, from, to });
+      user.bookings.push({ carDetails: car, from, to });
       await user.save();
     }
 
-    // await sendBookingConfirmationEmail(user, car, { from, to });
+    const bookingSubject = "Booking Successful";
+    const additionalInfo = { from, to };
+    
+    await mailServices(user.email,bookingSubject,car,additionalInfo);
 
     res.json({ message: "Car booked successfully", car });
   } catch (error) {
