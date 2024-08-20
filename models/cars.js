@@ -18,7 +18,6 @@ const carSchema = new mongoose.Schema(
         to: { type: String},
       },
     ],
-
     rentPerHour: { type: Number },
   },
   { timestamps: true }
