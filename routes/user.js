@@ -10,4 +10,5 @@ router.post("/register", userControllers.register);
 router.get("/getAvailableCars",authToken ,userControllers.getAvailableCars);
 router.post("/bookCar",authToken ,isCarAvailable ,userControllers.bookCar);
 router.post("/filterCars",authToken ,userControllers.filterCars);
+router.post("/submitRating" ,userControllers.submitRating);
 module.exports = router;

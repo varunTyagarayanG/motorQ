@@ -143,6 +143,12 @@ exports.bookCar = async (req, res) => {
     }
 
     const car = await Car.findById(carId);
+    if(car.inTransaction){
+      return res.status(400).json({
+        message: "SomeOne Is Booking This car..ans he is first in link",
+      });
+    }
+    car.inTransaction = true ;
     const carDetails = {
       carname : car.name,
       carsize : car.capacity,
@@ -155,6 +161,7 @@ exports.bookCar = async (req, res) => {
     }
 
     const isBooked = car.bookedTimeSlots.some(slot => {
+      car.inTransaction = false 
       return (
         (new Date(slot.from) < new Date(to) && new Date(slot.to) > new Date(from))
       );
@@ -203,5 +210,29 @@ exports.filterCars = async (req, res) => {
       res.json(cars);
   } catch (error) {
       res.status(500).json({ message: error.message });
+  }
+};
+exports.submitRating = async (req, res) => {
+  const { carId, rating } = req.body;
+
+  if (rating < 1 || rating > 5) {
+    return res.status(400).json({ message: "Rating must be between 1 and 5 stars." });
+  }
+
+  try {
+    const car = await Car.findById(carId);
+    if (!car) {
+      return res.status(404).json({ message: "Car not found" });
+    }
+
+    // Add the rating
+    car.ratings.push({ userId: req.userId, rating });
+    car.averageRating = car.calculateAverageRating();
+
+    await car.save();
+
+    res.json({ message: "Thank you for your feedback!", car });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
