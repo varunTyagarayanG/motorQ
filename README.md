@@ -1,7 +1,4 @@
-# Video Demonstration Script
-[link to video](https://drive.google.com/file/d/1sQobjpe1kw0PDek7L1qO7wYhbpufF3cX/view?usp=sharing)
-This video demonstration will cover various workflows, including Car Inventory Management, Vehicle Booking, Trip Management, Conflict Management, Concurrency Management, Vehicle Availability, and the Notification System.
-
+# Demonstration 
 ## 1. Car Inventory Management (Administrator’s Perspective)
 
 ### a. Add a Car
